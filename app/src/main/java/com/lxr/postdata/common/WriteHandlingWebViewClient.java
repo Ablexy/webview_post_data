@@ -47,12 +47,14 @@ public class WriteHandlingWebViewClient extends WebViewClient {
             // as a starting point for supporting multiple types of HTTP requests in a full fletched browser
 
             // Construct request
+
             HttpURLConnection conn = client.open(new URL(request.getUrl().toString()));
             conn.setRequestMethod(request.getMethod());
-
+            conn.setDoOutput(true);//向链接写入数据
             if ("POST".equals(request.getMethod())) {
                 OutputStream os = conn.getOutputStream();
                 try {
+                    //将要post的传参的数据写入输出流
                     os.write(request.getAjaxData().getBytes("UTF-8"));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
