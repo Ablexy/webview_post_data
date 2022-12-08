@@ -9,12 +9,12 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.lxr.postdata.R;
 import com.lxr.postdata.common.WebViewCaptureUtils;
+import com.tencent.smtt.sdk.WebView;
 
 import org.jsoup.helper.StringUtil;
 
@@ -57,7 +57,9 @@ public class WebviewCaptureActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                Bitmap bitmap = WebViewCaptureUtils.captureWebView(mWebView);
-                Bitmap bitmap = WebViewCaptureUtils.captureWebViewbyCache(mWebView);
+//                Bitmap bitmap = WebViewCaptureUtils.captureWebViewbyCache(mWebView);
+                Bitmap bitmap = WebViewCaptureUtils.captureX5WebViewUnsharp(WebviewCaptureActivity.this,mWebView);
+//                Bitmap bitmap =  WebViewCaptureUtils.captureWholePage(mWebView);
                 String path = WebViewCaptureUtils.saveBitmpToLoca(bitmap, WebviewCaptureActivity.this);
                 if (StringUtil.isBlank(path)){
                     Toast.makeText(WebviewCaptureActivity.this,"保存失败",Toast.LENGTH_SHORT).show();

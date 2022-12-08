@@ -11,7 +11,9 @@ import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
+import android.view.WindowManager;
+
+import com.tencent.smtt.sdk.WebView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -79,7 +81,6 @@ public class WebViewCaptureUtils {
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         Canvas canvas = new Canvas(bitmap);
         webView.draw(canvas);
-//        bitmap = webView.getDrawingCache(true);
         return bitmap;
     }
 
@@ -92,20 +93,20 @@ public class WebViewCaptureUtils {
      * @param webView
      * @return 二维码正常。缩略图
      */
-//    public static Bitmap captureX5WebViewUnsharp(Context context, WebView webView) {
-//        if (webView == null) {
-//            return null;
-//        }
-//        if (context == null) {
-//            context = webView.getContext();
-//        }
-//        int width = webView.getContentWidth();
-//        int height = webView.getContentHeight();
-//        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-//        Canvas canvas = new Canvas(bitmap);
-//        webView.getX5WebViewExtension().snapshotWholePage(canvas, false, false);
-//        return bitmap;
-//    }
+    public static Bitmap captureX5WebViewUnsharp(Context context, WebView webView) {
+        if (webView == null) {
+            return null;
+        }
+        if (context == null) {
+            context = webView.getContext();
+        }
+        int width = webView.getContentWidth();
+        int height = webView.getContentHeight();
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(bitmap);
+        webView.getX5WebViewExtension().snapshotWholePage(canvas, false, false);
+        return bitmap;
+    }
 
     /**
      * x5内核截图高清图，也可使用过期api

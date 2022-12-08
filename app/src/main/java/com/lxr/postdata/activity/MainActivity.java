@@ -3,6 +3,7 @@ package com.lxr.postdata.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -14,6 +15,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+import com.tencent.smtt.export.external.TbsCoreSettings;
+import com.tencent.smtt.sdk.QbSdk;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        initX5();
         Button button = findViewById(R.id.btn_jump);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
                 //多页面容器离线测试，post请求拦截
 //                String url = "https://u-ydwt-pro.yundasys.com:35529/online/golden_finger/index.html#/goldenfinger?user_id=90150089&userid=90150089&userId=90150089&dbct_cd=0&site_code=0&companyNo=0&username=金亮";
                 //测试h5绘制寄件码截图
-//                String url = "http://kyweixin.yunda56.com/ky/view/shareSalesman.html?gh_oa=1734121002";
-                String url = "https://m.baidu.com";
+                String url = "http://kyweixin.yunda56.com/ky/view/shareSalesman.html?gh_oa=1734121002";
+//                String url = "https://m.baidu.com";
                 intent.putExtra("url", url);
                 startActivity(intent);
 //                new Thread(new Runnable() {
@@ -148,6 +152,35 @@ public class MainActivity extends AppCompatActivity {
         return taskId;
     }
 
+
+    private void initX5(){
+        //在初始化前可配置允许移动网络下载内核
+        QbSdk.setDownloadWithoutWifi(true);
+        //设置开启优化方案+service
+        // 在调用TBS初始化、创建WebView之前进行如下配置
+        HashMap map = new HashMap();
+        map.put(TbsCoreSettings.TBS_SETTINGS_USE_SPEEDY_CLASSLOADER, true);
+        map.put(TbsCoreSettings.TBS_SETTINGS_USE_DEXLOADER_SERVICE, true);
+        QbSdk.initTbsSettings(map);
+        QbSdk.initX5Environment(getApplicationContext(),  new QbSdk.PreInitCallback() {
+            @Override
+            public void onCoreInitFinished() {
+                // 内核初始化完成，可能为系统内核，也可能为系统内核
+                Log.i("444","内核初始化完成");
+            }
+
+            /**
+             * 预初始化结束
+             * 由于X5内核体积较大，需要依赖网络动态下发，所以当内核不存在的时候，默认会回调false，此时将会使用系统内核代替
+             * @param isX5 是否使用X5内核
+             */
+            @Override
+            public void onViewInitFinished(boolean isX5) {
+                Log.i("444","内核初始化完成-是X5吗？"+isX5);
+
+            }
+        });
+    }
 
 
 
