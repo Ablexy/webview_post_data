@@ -38,12 +38,14 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, WebviewCaptureActivity.class);//appacce.yundasys.com
+                Intent intent = new Intent(MainActivity.this, InternetActivity.class);//appacce.yundasys.com
                 //多页面容器离线测试，post请求拦截
-//                String url = "https://u-ydwt-pro.yundasys.com:35529/online/golden_finger/index.html#/goldenfinger?user_id=90150089&userid=90150089&userId=90150089&dbct_cd=0&site_code=0&companyNo=0&username=金亮";
+                String url = "https://u-ydwt-pro.yundasys.com:35529/online/golden_finger/index.html#/goldenfinger?user_id=90150089&userid=90150089&userId=90150089&dbct_cd=0&site_code=0&companyNo=0&username=金亮";
                 //测试h5绘制寄件码截图
-                String url = "http://kyweixin.yunda56.com/ky/view/shareSalesman.html?gh_oa=1734121002";
+//                String url = "http://kyweixin.yunda56.com/ky/view/shareSalesman.html?gh_oa=1734121002";
 //                String url = "https://m.baidu.com";
+                  //待办
+//                String url = "http://10.172.248.119:31094/flowMenu/common?flowId=165024611233023";
                 intent.putExtra("url", url);
                 startActivity(intent);
 //                new Thread(new Runnable() {

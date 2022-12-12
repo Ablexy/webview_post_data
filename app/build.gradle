@@ -1,6 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+        }
+    }
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.lxr.postdata"
@@ -14,6 +18,20 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    signingConfigs {
+        release {
+            keyAlias '123456'
+            keyPassword '123456'
+            storeFile file('/Users/able/Desktop/github/webview_post_data/app/post_sign.jks')
+            storePassword '123456'
+            v2SigningEnabled false
         }
     }
     compileOptions {

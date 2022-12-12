@@ -1,7 +1,9 @@
 package com.lxr.postdata.common;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -10,6 +12,7 @@ import android.webkit.WebViewClient;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,6 +24,8 @@ import java.util.Map;
 
 
 public class WriteHandlingWebViewClient extends WebViewClient {
+
+    private String TAG = "WriteHandlingWebViewClient";
 
     private final String MARKER = "AJAXINTERCEPT";
 
@@ -34,13 +39,18 @@ public class WriteHandlingWebViewClient extends WebViewClient {
         webView.addJavascriptInterface(ajaxInterface, "interception");
     }
 
+    @Override
+    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        super.onPageStarted(view, url, favicon);
+        Log.i(TAG,"onPageStarted----");
+    }
+
     /*
      ** This here is the "fixed" shouldInterceptRequest method that you should override.
      ** It receives a WriteHandlingWebResourceRequest instead of a WebResourceRequest.
      */
     public WebResourceResponse shouldInterceptRequest(final WebView view, WriteHandlingWebResourceRequest request) {
         OkHttpClient client = new OkHttpClient();
-
         try {
             // Our implementation just parses the response and visualizes it. It does not properly handle
             // redirects or HTTP errors at the moment. It only serves as a demo for intercepting POST requests
@@ -48,14 +58,24 @@ public class WriteHandlingWebViewClient extends WebViewClient {
 
             // Construct request
 
-            HttpURLConnection conn = client.open(new URL(request.getUrl().toString()));
+//            HttpURLConnection conn = client.open(new URL(request.getUrl().toString()));
+            URL url = new URL(request.getUrl().toString());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Content-Type","application/json;charset=UTF-8");
             conn.setRequestMethod(request.getMethod());
-            conn.setDoOutput(true);//向链接写入数据
+//            conn.setDoOutput(true);//向链接写入数据
+//            conn.setDoInput(true);
             if ("POST".equals(request.getMethod())) {
+                if (!conn.getDoOutput()){
+                    conn.setDoOutput(true);
+                }
                 OutputStream os = conn.getOutputStream();
                 try {
                     //将要post的传参的数据写入输出流
-                    os.write(request.getAjaxData().getBytes("UTF-8"));
+                    if (request.getAjaxData()!=null){
+                        os.write(request.getAjaxData().getBytes("UTF-8"));
+                        os.flush();//用于网络传输，需要强制刷新的缓存区，否则输出的数据只停留在缓冲区中，而无法进行网络传输
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -65,12 +85,15 @@ public class WriteHandlingWebViewClient extends WebViewClient {
             // Read input
             String charset = conn.getContentEncoding() != null ? conn.getContentEncoding() : Charset.defaultCharset().displayName();
             String mime = conn.getContentType();
-            byte[] pageContents = Utils.consumeInputStream(conn.getInputStream());
+            if (conn.getInputStream()!=null){
+                byte[] pageContents = Utils.consumeInputStream(conn.getInputStream());
+                String res = new String(pageContents,"utf-8");;
+                // Convert the contents and return
+                InputStream isContents = new ByteArrayInputStream(pageContents);
 
-            // Convert the contents and return
-            InputStream isContents = new ByteArrayInputStream(pageContents);
+                return new WebResourceResponse(mime, charset, isContents);
+            }
 
-            return new WebResourceResponse(mime, charset, isContents);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -87,6 +110,7 @@ public class WriteHandlingWebViewClient extends WebViewClient {
      */
     @Override
     public final WebResourceResponse shouldInterceptRequest(final WebView view, WebResourceRequest request) {
+        Log.i(TAG,"shouldInterceptRequest----"+request.getUrl());
         String requestBody = null;
         Uri uri = request.getUrl();
 
@@ -105,6 +129,19 @@ public class WriteHandlingWebViewClient extends WebViewClient {
         } else {
             return injectIntercept(webResourceResponse, view.getContext());
         }
+
+    }
+
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+        Log.i(TAG,"shouldOverrideUrlLoading--request--"+request.getUrl().toString());
+        return super.shouldOverrideUrlLoading(view, request);
+    }
+
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        Log.i(TAG,"shouldOverrideUrlLoading--url--"+url);
+        return super.shouldOverrideUrlLoading(view, url);
     }
 
     void addAjaxRequest(String id, String body) {
