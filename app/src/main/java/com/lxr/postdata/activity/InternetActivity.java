@@ -16,7 +16,9 @@ import android.widget.ImageView;
 
 import com.lxr.postdata.R;
 import com.lxr.postdata.common.WriteHandlingWebViewClient;
+import com.tencent.smtt.sdk.CookieSyncManager;
 
+import java.net.CookieManager;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -42,7 +44,8 @@ public class InternetActivity extends AppCompatActivity {
         String url = getIntent().getStringExtra("url");
 
         WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
+//        settings.setJavaScriptEnabled(true);
+//        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         webView.setWebViewClient(new WriteHandlingWebViewClient(webView) {
 
@@ -52,7 +55,7 @@ public class InternetActivity extends AppCompatActivity {
             WebView.setWebContentsDebuggingEnabled(true);
         }
 
-        //TODO 遗留二级页面调整问题
+        //TODO 遗留二级页面跳转问题
 
         //        如果是get请求，直接拦截url请求即可
 //                        webView.setWebViewClient(new WebViewClient() {
